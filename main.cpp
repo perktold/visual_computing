@@ -2,7 +2,9 @@
 #include <iostream>
 #include <opencv2/geometry.hpp>
 #include <string>
+#include <filesystem>
 using namespace cv;
+using namespace std;
 
 void transformations() {
     Mat image = imread("ex_01.jpg");
@@ -26,7 +28,7 @@ void transformations() {
     
     warpPerspective(image, image2, getPerspectiveTransform(persp_src, persp_dst), image.size());
 
-    imwrite("ex_01_perspective.jpg", image2);
+    imwrite("ex01/ex_01_perspective.jpg", image2);
     imshow("Transformed", image2);
     setWindowProperty(
         "Transformed",
@@ -66,9 +68,9 @@ void transformations() {
         affine_matrix.at<double>(1, 0) * original_point.x +
         affine_matrix.at<double>(1, 1) * original_point.y +
         affine_matrix.at<double>(1, 2);
-    
+
     std::cout << "x: " << transformed_point.x << ", y: " << transformed_point.y;
-    imwrite("ex_01_affine.jpg", image2);
+    imwrite("ex01/ex_01_affine.jpg", image2);
     imshow("Transformed", image2);
 
     waitKey(0);
@@ -115,6 +117,54 @@ void gabor_filter() {
     imwrite("gabor/tmp.png", c8);
     imshow("combined", c8);
     waitKey(0);
+}
+
+void gaussian_pyramid() {
+
+    Mat image = imread("arnold_schwarzenegger.jpg");
+    Mat image2;
+    Mat final_image;
+    Mat kernel = (Mat_<float>(1, 5) << 1.0f, 4.0f, 6.0f, 4.0f, 1.0f) / 16.0f;
+    namedWindow("Transformed", WINDOW_NORMAL);
+
+    for(int i = 0; i <= 4; i++){
+        pyrDown(image, image2);
+        image = final_image.clone();
+        string image_name = "ex02/ex_02_" + to_string(i + 1) + ".jpg";
+        imwrite(image_name, image);
+        imshow("Transformed", image);
+        waitKey(0);
+        setWindowProperty("Transformed", WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN);
+    }
+    destroyAllWindows();
+}
+
+void laplacian_pyramid() {
+    Mat image = imread("arnold_schwarzenegger.jpg");
+    vector<Mat> pyramid;
+    vector<Mat> laplacian;
+    Mat expanded;
+    Mat difference;
+    namedWindow("Transformed", WINDOW_NORMAL);
+    setWindowProperty("Transformed", WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN);
+    buildPyramid (image, pyramid, 4);
+    
+    for (int i = 0; i < 4; i++) {
+        pyrUp(pyramid[i + 1], expanded, pyramid[i].size());
+        subtract(pyramid[i], expanded, difference, noArray(), CV_16SC3);
+        laplacian.push_back(difference.clone());
+        string image_name = "ex03/ex_03_" + to_string(i + 1) + ".png";
+        Mat display;
+        normalize(difference, display, 0, 255, NORM_MINMAX);
+        display.convertTo(display, CV_8UC3);
+
+        imwrite(image_name, display);
+        imshow("Transformed", display);
+        waitKey(0);
+    }
+    laplacian.push_back(pyramid[4]);
+    imwrite("ex03/ex_03_5.png", pyramid[4]);
+    destroyAllWindows();
 }
 
 int main() {
