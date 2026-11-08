@@ -61,7 +61,10 @@ The fourth corner ends up at (4752, 4100) instead of around (3019, 3401), distan
 ** explanation
 An affine transformation preserves lines and parallelism. If the original image has non-parallel lines (like the vertical lines on our sheet of paper) they will not be parallel after the transformation. In comparison, te 
 
-* Gausssian and Laplacian pyramid
+* Gaussian Laplacian pyramid
+** Gaussian pyramid
+** Laplacian pyramid
+* Gabor filter bank
 ** gabor kernels
 #+begin_src c
   const double sigma = 4.0, lambda = 10.0, gamma = 0.5, psi = 0;
@@ -131,3 +134,19 @@ i use
 [[./gabor/lambda_5.png]]
 
 For faces a lambda of around 8 seems best.
+
+* canny edge detection
+#+begin_src c
+    double otsuThreshold = threshold(img, otsuImage, 0, 255, THRESH_BINARY | THRESH_OTSU);
+    double lowerThreshold = 0.5 * otsuThreshold;
+    double upperThreshold = otsuThreshold;
+    Mat edges;
+    Canny(img, edges, lowerThreshold, upperThreshold);
+#+end_src
+
+Unfortunately, there was no builtin for generating multiple thresholds using otsus method. We decided to use a fixed 2:1 ratio based on otsu istead of implementing our own threshold function.
+
+#+ATTR_LATEX: :width 0.5\textwidth
+[[./ex04/canny_edge.jpg]]
+
+** comparison

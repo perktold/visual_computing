@@ -1,4 +1,4 @@
-% Created 2026-11-08 Sun 12:20
+% Created 2026-11-08 Sun 13:13
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 
@@ -140,9 +140,9 @@
 
 \#+OPTIONS toc:nil
 \section{Perspective rectification}
-\label{sec:orgf323b90}
+\label{sec:org1b6ca63}
 \subsection{perspective transform}
-\label{sec:orgedcc958}
+\label{sec:org2c850dc}
 
 \begin{Code}
 \begin{Verbatim}
@@ -164,7 +164,7 @@
 \end{Verbatim}
 \end{Code}
 \subsection{affine transform}
-\label{sec:org7af99f3}
+\label{sec:orgd702e0f}
 
 \begin{Code}
 \begin{Verbatim}
@@ -202,12 +202,12 @@ transformed\_point.y =
 
 The fourth corner ends up at (4752, 4100) instead of around (3019, 3401), distance 1868.66
 \subsection{explanation}
-\label{sec:org42a85d0}
+\label{sec:org92bab56}
 An affine transformation preserves lines and parallelism. If the original image has non-parallel lines (like the vertical lines on our sheet of paper) they will not be parallel after the transformation. In comparison, te 
 \section{Gausssian and Laplacian pyramid}
-\label{sec:orgc9e49ee}
+\label{sec:orgc8f1cab}
 \subsection{gabor kernels}
-\label{sec:org2dcf0e0}
+\label{sec:orgc583767}
 \begin{Code}
 \begin{Verbatim}
 \color{EFD}\EFk{const} \EFt{double} \EFv{sigma} = 4.0, \EFv{lambda} = 10.0, \EFv{gamma} = 0.5, \EFv{psi} = 0;
@@ -230,7 +230,7 @@ An affine transformation preserves lines and parallelism. If the original image 
 \end{Verbatim}
 \end{Code}
 \subsubsection{0 degrees:}
-\label{sec:org4340a6b}
+\label{sec:org3cf774b}
 \begin{center}
 \includegraphics[width=0.5\textwidth]{./gabor/kernel_0.png}
 \end{center} 
@@ -238,7 +238,7 @@ An affine transformation preserves lines and parallelism. If the original image 
 \includegraphics[width=0.5\textwidth]{./gabor/result_0.png}
 \end{center} 
 \subsubsection{45 degrees:}
-\label{sec:orge65925c}
+\label{sec:org26305ae}
 \begin{center}
 \includegraphics[width=0.5\textwidth]{./gabor/kernel_45.png}
 \end{center}
@@ -246,7 +246,7 @@ An affine transformation preserves lines and parallelism. If the original image 
 \includegraphics[width=0.5\textwidth]{./gabor/result_45.png}
 \end{center}
 \subsubsection{90 degrees:}
-\label{sec:org154a27f}
+\label{sec:org7c6b8a8}
 \begin{center}
 \includegraphics[width=0.5\textwidth]{./gabor/kernel_90.png}
 \end{center}
@@ -254,7 +254,7 @@ An affine transformation preserves lines and parallelism. If the original image 
 \includegraphics[width=0.5\textwidth]{./gabor/result_90.png}
 \end{center}
 \subsubsection{135 degrees:}
-\label{sec:orgcdf0e36}
+\label{sec:orgaa6714f}
 \begin{center}
 \includegraphics[width=0.5\textwidth]{./gabor/kernel_135.png}
 \end{center}
@@ -262,12 +262,12 @@ An affine transformation preserves lines and parallelism. If the original image 
 \includegraphics[width=0.5\textwidth]{./gabor/result_135.png}
 \end{center}
 \subsubsection{result}
-\label{sec:org80f3eb9}
+\label{sec:org8484844}
 \begin{center}
 \includegraphics[width=0.5\textwidth]{./gabor/combined_max.png}
 \end{center}
 \subsection{playing with parameters}
-\label{sec:org14fcc4a}
+\label{sec:orgc5340ea}
 i use 
 \begin{Code}
 \begin{Verbatim}
@@ -275,25 +275,42 @@ i use
 \end{Verbatim}
 \end{Code}
 \subsubsection{lambda=15}
-\label{sec:orgc1530a4}
+\label{sec:org69e8fd5}
 \begin{center}
 \includegraphics[width=0.5\textwidth]{./gabor/lambda_15.png}
 \end{center}
 \subsubsection{lambda=12}
-\label{sec:org6b232f2}
+\label{sec:org148d05c}
 \begin{center}
 \includegraphics[width=0.5\textwidth]{./gabor/lambda_12.png}
 \end{center}
 \subsubsection{lambda=8}
-\label{sec:orgdd1101c}
+\label{sec:orgbebef41}
 \begin{center}
 \includegraphics[width=0.5\textwidth]{./gabor/lambda_8.png}
 \end{center}
 \subsubsection{lambda=5}
-\label{sec:org7d9c7c0}
+\label{sec:org6f82988}
 \begin{center}
 \includegraphics[width=0.5\textwidth]{./gabor/lambda_5.png}
 \end{center}
 
 For faces a lambda of around 8 seems best.
+\section{canny edge detection}
+\label{sec:org2459b30}
+\begin{Code}
+\begin{Verbatim}
+\color{EFD}\EFt{double} \EFv{otsuThreshold} = threshold(img, otsuImage, 0, 255, THRESH\_BINARY | THRESH\_OTSU);
+\EFt{double} \EFv{lowerThreshold} = 0.5 * otsuThreshold;
+\EFt{double} \EFv{upperThreshold} = otsuThreshold;
+\EFt{Mat} \EFv{edges};
+\EFf{Canny}(\EFt{img}, \EFt{edges}, \EFt{lowerThreshold}, \EFt{upperThreshold});
+\end{Verbatim}
+\end{Code}
+
+Unfortunately, there was no builtin for generating multiple thresholds using otsus method. We decided to use a fixed 2:1 ratio based on otsu istead of implementing our own threshold function.
+
+\begin{center}
+\includegraphics[width=0.5\textwidth]{./ex04/canny_edge.jpg}
+\end{center}
 \end{document}
