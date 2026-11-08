@@ -1,9 +1,10 @@
 #include <opencv2/opencv.hpp>
 #include <iostream>
 #include <opencv2/geometry.hpp>
+#include <string>
 using namespace cv;
 
-int main() {
+void transformations() {
     Mat image = imread("ex_01.jpg");
     Mat image2;
     namedWindow("Transformed", WINDOW_NORMAL);
@@ -72,4 +73,49 @@ int main() {
 
     waitKey(0);
     destroyAllWindows();
+}
+
+void gabor_filter() {
+    Mat img = imread("arnold_schwarzenegger.jpg", IMREAD_GRAYSCALE);
+    img.convertTo(img, CV_32F, 1.0 / 255);
+
+    const double sigma = 3, lambda = 7.0, gamma = 0.5, psi = 0;
+    const int ksize = 31;
+    const int angles[4] = {0, 45, 90, 135};
+
+    // initialize Matrix for combined kernels with smallest possible float
+    Mat combined(img.size(), CV_32F, Scalar(-FLT_MAX));
+    Mat first = Mat();
+
+    for (int i = 0; i < 4; ++i) {
+        double theta = angles[i] * CV_PI / 180.0;
+
+        // compute kernel
+        Mat kernel = getGaborKernel(Size(ksize, ksize), sigma, theta, lambda, gamma, psi, CV_32F);
+
+        // filter image
+        Mat resp;
+        filter2D(img, resp, CV_32F, kernel);
+
+        // combine results by taking the max value of each pixel
+        max(combined, resp, combined);
+
+        // normalize to 0-255 for saving
+        Mat k8, r8;
+        normalize(kernel, k8, 0, 255, NORM_MINMAX, CV_8U);
+        normalize(resp, r8, 0, 255, NORM_MINMAX, CV_8U);
+
+        std::string a = std::to_string(angles[i]);
+        imwrite("gabor/kernel_" + a + ".png", k8);
+        imwrite("gabor/result_" + a + ".png", r8);
+    }
+
+    Mat c8;
+    normalize(combined, c8, 0, 255, NORM_MINMAX, CV_8U);
+    imwrite("gabor/tmp.png", c8);
+    imshow("combined", c8);
+    waitKey(0);
+}
+
+int main() {
 }
