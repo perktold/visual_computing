@@ -167,5 +167,26 @@ void laplacian_pyramid() {
     destroyAllWindows();
 }
 
+void canny_edge(){
+    Mat img = imread("arnold_schwarzenegger.jpg", IMREAD_GRAYSCALE);
+    Mat otsuImage;
+    namedWindow("Transformed", WINDOW_NORMAL);
+    setWindowProperty("Transformed", WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN);
+
+    double otsuThreshold = threshold(img, otsuImage, 0, 255, THRESH_BINARY | THRESH_OTSU);
+    double lowerThreshold = 0.5 * otsuThreshold;
+    double upperThreshold = otsuThreshold;
+    Mat edges;
+    Canny(img, edges, lowerThreshold, upperThreshold);
+
+    imshow("Transformed", img);
+    waitKey(0);
+
+    imwrite("ex04/canny_edge.jpg", edges);
+    imshow("Transformed", edges);
+    waitKey(0);
+}
+
 int main() {
+    canny_edge();
 }
