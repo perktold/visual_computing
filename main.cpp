@@ -153,7 +153,7 @@ void laplacian_pyramid() {
         pyrUp(pyramid[i + 1], expanded, pyramid[i].size());
         subtract(pyramid[i], expanded, difference, noArray(), CV_16SC3);
         laplacian.push_back(difference.clone());
-        string image_name = "ex03/ex_03_" + to_string(i + 1) + ".png";
+        string image_name = "laplacian/ex_03_" + to_string(i + 1) + ".jpg";
         Mat display;
         normalize(difference, display, 0, 255, NORM_MINMAX);
         display.convertTo(display, CV_8UC3);
@@ -163,7 +163,6 @@ void laplacian_pyramid() {
         waitKey(0);
     }
     laplacian.push_back(pyramid[4]);
-    imwrite("ex03/ex_03_5.png", pyramid[4]);
     destroyAllWindows();
 }
 
@@ -188,5 +187,5 @@ void canny_edge(){
 }
 
 int main() {
-    canny_edge();
+   laplacian_pyramid();
 }
